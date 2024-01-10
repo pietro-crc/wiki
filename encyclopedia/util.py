@@ -66,7 +66,6 @@ def search(request):
                 return HttpResponse(f"Page not found. You're search KEY = {query}", status=404)
             return render(request, "encyclopedia/entry.html", {
                         "list": list,
-                       
                     })
         except:
             return HttpResponse(f"Page not found. You're search KEY = {query}", status=404)
