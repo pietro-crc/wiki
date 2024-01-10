@@ -3,6 +3,9 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 import re
+from django.shortcuts import render
+
+
 
 def list_entries():
     """
@@ -32,6 +35,11 @@ def get_entry(request,title):
     """
     try:
         f = default_storage.open(f"entries/{title}.md")
-        return HttpResponse(f.read().decode("utf-8"))
+        value = f.read().decode("utf-8")
+        return render(request, "encyclopedia/entry.html", {
+            "title": title,
+            "content": value
+        })
+
     except FileNotFoundError:
         return HttpResponse(f"Page not found. You're search KEY = {title}", status=404)
