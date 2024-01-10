@@ -4,6 +4,7 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse
 import re
 from django.shortcuts import render
+from django import forms
 
 
 
@@ -43,3 +44,27 @@ def get_entry(request,title):
 
     except FileNotFoundError:
         return HttpResponse(f"Page not found. You're search KEY = {title}", status=404)
+
+
+def search(request):
+    query = request.GET.get('q')
+    try:
+        f = default_storage.open(f"entries/{query}.md")
+        value = f.read().decode("utf-8")
+        return render(request, "encyclopedia/entry.html", {
+            "title": query,
+            "content": value
+        })
+    except :
+        try:
+            f = default_storage.open(f"entries/{query.capitalize()}.md")
+            value = f.read().decode("utf-8")
+            return render(request, "encyclopedia/entry.html", {
+                "title": query.capitalize(),
+                "content": value
+            })
+        except:
+            return render(request, "encyclopedia/search.html", {
+                "entries": list_entries(),
+                "query": query
+            })
