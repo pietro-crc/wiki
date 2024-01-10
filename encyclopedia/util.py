@@ -5,7 +5,7 @@ from django.http import HttpResponse
 import re
 from django.shortcuts import render
 from django import forms
-
+import os 
 
 
 def list_entries():
@@ -57,14 +57,17 @@ def search(request):
         })
     except :
         try:
-            f = default_storage.open(f"entries/{query.capitalize()}.md")
-            value = f.read().decode("utf-8")
+            list=[]
+            for filename in os.listdir("entries"):
+                if re.search(query, filename):
+                    #usare session !!!!!!!
+                    list.append(filename)
+            if len(list)==0:
+                return HttpResponse(f"Page not found. You're search KEY = {query}", status=404)
             return render(request, "encyclopedia/entry.html", {
-                "title": query.capitalize(),
-                "content": value
-            })
+                        "list": list,
+                       
+                    })
         except:
-            return render(request, "encyclopedia/search.html", {
-                "entries": list_entries(),
-                "query": query
-            })
+            return HttpResponse(f"Page not found. You're search KEY = {query}", status=404)
+  
